@@ -1,0 +1,117 @@
+{
+  "metadata": {
+    "brand": "Discovery Expedition",
+    "year": 2026,
+    "totalBudget": 840,
+    "currency": "KRW_MILLION",
+    "months": ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월"]
+  },
+  "categories": [
+    { "id": "adult_viral", "name": "성인 바이럴", "color": "#D63384" },
+    { "id": "kids", "name": "키즈", "color": "#1971C2" }
+  ],
+  "versions": [
+    {
+      "id": "v1",
+      "label": "기존 (03.23)",
+      "date": "2026-03-23",
+      "note": "초기 예산안",
+      "allocations": {
+        "adult_viral": {
+          "monthly": [35, 150, 160, 170, 110, 80, 50, 20],
+          "total": 775
+        },
+        "kids": {
+          "monthly": [5, 5, 10, 10, 10, 10, 10, 5],
+          "total": 65
+        }
+      },
+      "issues": [
+        { "name": "앰버서더 콘텐츠", "months": [4, 5], "amount": 80, "color": "#D63384" },
+        { "name": "신학기 백팩", "months": [1, 2], "amount": 40, "color": "#0CA678" },
+        { "name": "여름 아웃도어", "months": [5, 6, 7], "amount": 100, "color": "#E67700" },
+        { "name": "일반 바이럴", "months": [1, 2, 3, 4, 5, 6, 7, 8], "amount": 555, "color": "#868E96" }
+      ]
+    },
+    {
+      "id": "v2",
+      "label": "1차 변경 (03.24)",
+      "date": "2026-03-24",
+      "note": "4~5월 시즌 집중을 위한 예산 재배분",
+      "allocations": {
+        "adult_viral": {
+          "monthly": [35, 150, 155, 180, 130, 60, 45, 20],
+          "total": 775
+        },
+        "kids": {
+          "monthly": [5, 5, 10, 10, 10, 10, 10, 5],
+          "total": 65
+        }
+      },
+      "issues": [
+        { "name": "앰버서더 콘텐츠", "months": [4, 5], "amount": 90, "color": "#D63384" },
+        { "name": "신학기 백팩", "months": [1, 2], "amount": 40, "color": "#0CA678" },
+        { "name": "여름 아웃도어", "months": [5, 6, 7], "amount": 80, "color": "#E67700" },
+        { "name": "일반 바이럴", "months": [1, 2, 3, 4, 5, 6, 7, 8], "amount": 565, "color": "#868E96" }
+      ]
+    },
+    {
+      "id": "v3",
+      "label": "최종 변경 (03.26)",
+      "date": "2026-03-26",
+      "note": "SH 메리제인 슈즈 이슈화(3천) + 5월 집중 + 6~7월 셀럽 바이럴 이관(1천)",
+      "allocations": {
+        "adult_viral": {
+          "monthly": [35, 152.1, 143.9, 140, 180, 59, 45, 20],
+          "total": 775
+        },
+        "kids": {
+          "monthly": [5, 5, 10, 10, 10, 10, 10, 5],
+          "total": 65
+        }
+      },
+      "issues": [
+        { "name": "앰버서더 콘텐츠", "months": [4, 5], "amount": 80, "color": "#D63384" },
+        { "name": "SH 메리제인 슈즈", "months": [5], "amount": 30, "color": "#FF6B6B" },
+        { "name": "셀럽별 바이럴", "months": [6, 7], "amount": 10, "color": "#845EF7" },
+        { "name": "신학기 백팩", "months": [1, 2], "amount": 40, "color": "#0CA678" },
+        { "name": "여름 아웃도어", "months": [5, 6, 7], "amount": 60, "color": "#E67700" },
+        { "name": "일반 바이럴", "months": [1, 2, 3, 4, 5, 6, 7, 8], "amount": 555, "color": "#868E96" }
+      ]
+    }
+  ],
+  "insights": [
+    {
+      "type": "weather_risk",
+      "icon": "cloud-rain",
+      "title": "날씨 리스크 구간",
+      "months": [3, 6, 7],
+      "description": "환절기(3월)·장마(6~7월) 시즌 아웃도어 콘텐츠 효율 저하 예상",
+      "recommendation": "날씨 무관 실내/라이프스타일 콘텐츠 비중 확대 권장. 우천 시 대체 콘텐츠 플랜 B 준비."
+    },
+    {
+      "type": "trend",
+      "icon": "trending-up",
+      "title": "5월 바이럴 피크 시즌",
+      "months": [5],
+      "description": "아웃도어 SNS 검색량 연중 최고치 도달 구간. 가정의 달 + 나들이 시즌 수요 급증.",
+      "recommendation": "앰버서더 콘텐츠 + SH 메리제인 이슈 동시 집행으로 시너지 극대화. 릴스/숏폼 중심 바이럴."
+    },
+    {
+      "type": "issue",
+      "icon": "sparkles",
+      "title": "SH 메리제인 슈즈 이슈화",
+      "months": [5],
+      "description": "상부 피드백 반영, 5월에 SH 메리제인 슈즈 이슈화 비용 3천만 예비 편성.",
+      "recommendation": "셀럽 착용컷 + 스트릿 스냅 콘텐츠 조합. 인스타그램 릴스 + 틱톡 동시 공략."
+    },
+    {
+      "type": "strategy",
+      "icon": "target",
+      "title": "셀럽 바이럴 6~7월 이관",
+      "months": [6, 7],
+      "description": "6~7월 셀럽별 바이럴 비용 각 500만 추가 편성 (총 1천 이관). 장마 시즌 실내 콘텐츠 활용.",
+      "recommendation": "셀럽 일상 브이로그 내 자연스러운 제품 노출. 비오는 날 무드 콘텐츠로 차별화."
+    }
+  ]
+}
