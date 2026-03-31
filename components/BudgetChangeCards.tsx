@@ -80,7 +80,7 @@ export default function BudgetChangeCards({
         </div>
 
         {/* Bar chart */}
-        <div className="flex items-end gap-1.5" style={{ height: 140 }}>
+        <div className="flex items-end gap-1.5" style={{ height: 160 }}>
           {months.map((month, i) => {
             const prevH = maxVal > 0 ? (prevTTL[i] / maxVal) * 100 : 0;
             const currH = maxVal > 0 ? (currTTL[i] / maxVal) * 100 : 0;
@@ -104,6 +104,16 @@ export default function BudgetChangeCards({
                   }}
                 >
                   {diff === 0 ? '—' : `${diff > 0 ? '+' : ''}${diff}`}
+                </div>
+
+                {/* Value labels above bars */}
+                <div className="w-full flex justify-center gap-0.5 mb-0.5">
+                  <span className="flex-1 max-w-[14px] text-[8px] font-semibold text-center leading-none tabular-nums" style={{ color: '#9CA3AF' }}>
+                    {prevTTL[i] > 0 ? Math.floor(prevTTL[i]) : ''}
+                  </span>
+                  <span className="flex-1 max-w-[14px] text-[8px] font-semibold text-center leading-none tabular-nums" style={{ color: '#D63384' }}>
+                    {currTTL[i] > 0 ? Math.floor(currTTL[i]) : ''}
+                  </span>
                 </div>
 
                 {/* Bars container */}
