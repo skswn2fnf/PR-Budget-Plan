@@ -2,15 +2,26 @@ import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 
-const DATA_PATH = path.join(process.cwd(), 'data', 'budget.json');
+const BUNDLED_PATH = path.join(process.cwd(), 'data', 'budget.json');
+const isVercel = !!process.env.VERCEL;
+const TMP_PATH = '/tmp/budget.json';
+
+function getDataPath(): string {
+  if (!isVercel) return BUNDLED_PATH;
+  if (!fs.existsSync(TMP_PATH)) {
+    fs.copyFileSync(BUNDLED_PATH, TMP_PATH);
+  }
+  return TMP_PATH;
+}
 
 function readBudgetData() {
-  const raw = fs.readFileSync(DATA_PATH, 'utf-8');
+  const raw = fs.readFileSync(getDataPath(), 'utf-8');
   return JSON.parse(raw);
 }
 
 function writeBudgetData(data: any) {
-  fs.writeFileSync(DATA_PATH, JSON.stringify(data, null, 2), 'utf-8');
+  const target = isVercel ? TMP_PATH : BUNDLED_PATH;
+  fs.writeFileSync(target, JSON.stringify(data, null, 2), 'utf-8');
 }
 
 // GET: 예산 데이터 조회
