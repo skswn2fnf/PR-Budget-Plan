@@ -62,7 +62,7 @@
       "note": "SH 메리제인 슈즈 이슈화(3천) + 5월 집중 + 6~7월 셀럽 바이럴 이관(1천)",
       "allocations": {
         "adult_viral": {
-          "monthly": [35, 152.1, 143.9, 140, 180, 59, 45, 20],
+          "monthly": [35, 150, 146, 140, 180, 59, 45, 20],
           "total": 775
         },
         "kids": {
@@ -118,7 +118,7 @@
     "v3": {
       "summary": [
         { "id": "spot", "name": "신학기 직페(SPOT)", "monthly": [35, 30, 0, 0, 0, 0, 0, 0], "total": 65, "color": "#0CA678" },
-        { "id": "adult_viral", "name": "성인 바이럴(숏즈)", "monthly": [0, 122.1, 143.9, 140, 180, 59, 45, 20], "total": 710, "color": "#D63384" },
+        { "id": "adult_viral", "name": "성인 바이럴(숏즈)", "monthly": [0, 120, 146, 140, 180, 59, 45, 20], "total": 710, "color": "#D63384" },
         { "id": "kids", "name": "키즈", "monthly": [5, 5, 10, 10, 10, 10, 10, 5], "total": 65, "color": "#1971C2" }
       ],
       "detailed": [
@@ -135,7 +135,7 @@
           "id": "look_item",
           "name": "IMC 아이템",
           "items": [
-            { "id": "imc", "name": "IMC 에이밍", "monthly": [0, 22.1, 22, 34, 48, 0, 19.5, 20], "total": 165.6, "color": "#E67700" },
+            { "id": "imc", "name": "IMC 에이밍", "monthly": [0, 20, 24.1, 34, 48, 0, 19.5, 20], "total": 165.6, "color": "#E67700" },
             { "id": "summer", "name": "여름 아웃도어", "monthly": [0, 0, 0, 0, 27, 25, 8, 0], "total": 60, "color": "#2B8A3E" },
             { "id": "celeb_viral", "name": "셀럽별 바이럴", "monthly": [0, 0, 0, 0, 0, 5, 5, 0], "total": 10, "color": "#845EF7" }
           ]
