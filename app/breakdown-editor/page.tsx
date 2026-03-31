@@ -27,6 +27,23 @@ const GROUP_BORDER_COLORS: Record<string, string> = {
 
 type SaveStatus = 'idle' | 'saving' | 'success' | 'error';
 
+function getBreakdownForVersion(versionId: string): { groups: DetailedGroup[]; source: 'own' | 'template'; templateFrom?: string } {
+  const own = data.breakdowns[versionId];
+  if (own?.detailed?.length) {
+    return { groups: own.detailed, source: 'own' };
+  }
+  const allVersionIds = Object.keys(data.breakdowns);
+  if (allVersionIds.length > 0) {
+    const templateId = allVersionIds[allVersionIds.length - 1];
+    const template = data.breakdowns[templateId];
+    if (template?.detailed?.length) {
+      const templateLabel = data.versions.find((v) => v.id === templateId)?.label ?? templateId;
+      return { groups: template.detailed, source: 'template', templateFrom: templateLabel };
+    }
+  }
+  return { groups: [], source: 'own' };
+}
+
 export default function BreakdownEditor() {
   const router = useRouter();
   const months = data.metadata.months;
@@ -35,19 +52,22 @@ export default function BreakdownEditor() {
     data.versions[data.versions.length - 1].id
   );
 
-  const existingBreakdown = data.breakdowns[selectedVersionId];
-  const initialGroups: DetailedGroup[] = existingBreakdown?.detailed ?? [];
+  const initial = getBreakdownForVersion(selectedVersionId);
+  const initialGroups: DetailedGroup[] = initial.groups;
 
   const [groups, setGroups] = useState<DetailedGroup[]>(
     JSON.parse(JSON.stringify(initialGroups))
   );
+  const [templateSource, setTemplateSource] = useState<string | undefined>(initial.templateFrom);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
   const [errorMsg, setErrorMsg] = useState('');
 
+  const isNewBreakdown = !data.breakdowns[selectedVersionId]?.detailed?.length;
   const hasChanges = useMemo(
     () => JSON.stringify(groups) !== JSON.stringify(initialGroups),
     [groups, initialGroups]
   );
+  const canSave = hasChanges || isNewBreakdown;
 
   const grandTotal = useMemo(
     () => groups.flatMap((g) => g.items).reduce((sum, it) => sum + it.monthly.reduce((s, v) => s + v, 0), 0),
@@ -147,21 +167,34 @@ export default function BreakdownEditor() {
   }, [initialGroups]);
 
   const computeSummaryFromDetailed = (detailed: DetailedGroup[]): BudgetSummaryRow[] => {
-    const existing = existingBreakdown?.summary;
-    if (existing) {
-      return existing.map((row) => {
+    const templateSummary = (() => {
+      const own = data.breakdowns[selectedVersionId]?.summary;
+      if (own) return own;
+      const allKeys = Object.keys(data.breakdowns);
+      for (const key of allKeys) {
+        if (data.breakdowns[key]?.summary?.length) return data.breakdowns[key].summary;
+      }
+      return null;
+    })();
+
+    if (templateSummary) {
+      return templateSummary.map((row) => {
         const relatedItems = detailed.flatMap((g) => g.items).filter((it) => {
           if (row.id === 'spot') return it.id === 'spot';
           if (row.id === 'kids') return it.id === 'kids';
           return !['spot', 'kids'].includes(it.id);
         });
-        const monthly = months.map((_, i) => relatedItems.reduce((s, it) => s + it.monthly[i], 0));
+        const monthly = months.map((_, i) =>
+          Math.round(relatedItems.reduce((s, it) => s + it.monthly[i], 0) * 10) / 10
+        );
         const total = Math.round(monthly.reduce((s, v) => s + v, 0) * 10) / 10;
         return { ...row, monthly, total };
       });
     }
     const allItems = detailed.flatMap((g) => g.items);
-    const monthly = months.map((_, i) => allItems.reduce((s, it) => s + it.monthly[i], 0));
+    const monthly = months.map((_, i) =>
+      Math.round(allItems.reduce((s, it) => s + it.monthly[i], 0) * 10) / 10
+    );
     const total = Math.round(monthly.reduce((s, v) => s + v, 0) * 10) / 10;
     return [{ id: 'all', name: '전체', monthly, total, color: '#D63384' }];
   };
@@ -212,8 +245,9 @@ export default function BreakdownEditor() {
         selectedVersionId={selectedVersionId}
         onVersionChange={(id) => {
           setSelectedVersionId(id);
-          const bd = data.breakdowns[id];
-          setGroups(bd ? JSON.parse(JSON.stringify(bd.detailed)) : []);
+          const result = getBreakdownForVersion(id);
+          setGroups(JSON.parse(JSON.stringify(result.groups)));
+          setTemplateSource(result.templateFrom);
           setSaveStatus('idle');
         }}
       />
@@ -227,6 +261,22 @@ export default function BreakdownEditor() {
             그룹/항목 추가·삭제 후 저장하면 해당 버전의 세부 예산이 업데이트됩니다.
           </p>
         </div>
+
+        {/* 템플릿 복사 안내 */}
+        {isNewBreakdown && templateSource && groups.length > 0 && (
+          <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl flex items-start gap-3">
+            <span className="text-amber-500 text-lg leading-none mt-0.5">*</span>
+            <div>
+              <p className="text-sm font-semibold text-amber-800">
+                이 버전에는 세부 예산 데이터가 아직 없습니다
+              </p>
+              <p className="text-xs text-amber-600 mt-1">
+                <span className="font-medium">{templateSource}</span> 버전의 데이터를 템플릿으로 불러왔습니다.
+                금액을 수정한 후 저장하면 이 버전의 세부 예산으로 저장됩니다.
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* 통계 바 */}
         <div className="grid grid-cols-3 gap-4">
@@ -432,15 +482,15 @@ export default function BreakdownEditor() {
           </button>
           <button
             onClick={handleSave}
-            disabled={!hasChanges || saveStatus === 'saving' || saveStatus === 'success'}
+            disabled={!canSave || saveStatus === 'saving' || saveStatus === 'success'}
             className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold transition ${
-              !hasChanges || saveStatus === 'saving' || saveStatus === 'success'
+              !canSave || saveStatus === 'saving' || saveStatus === 'success'
                 ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
                 : 'bg-[#D63384] hover:bg-[#D63384]/90 text-white'
             }`}
           >
             <Save size={16} />
-            {saveStatus === 'saving' ? '저장 중…' : saveStatus === 'success' ? '저장 완료!' : '세부 예산 저장'}
+            {saveStatus === 'saving' ? '저장 중…' : saveStatus === 'success' ? '저장 완료!' : isNewBreakdown ? '세부 예산 새로 저장' : '세부 예산 저장'}
           </button>
         </div>
       </div>
