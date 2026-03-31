@@ -28,12 +28,14 @@ export default function Drilldown() {
     ? calcPercentage(selectedAlloc.total, selectedVersionTTL)
     : 0;
 
+  const round1 = (v: number) => Math.round(v * 10) / 10;
+
   // 차트 데이터
   const chartData = months.map((month, i) => ({
     month,
     prev: firstAlloc?.monthly[i] ?? 0,
     curr: selectedAlloc?.monthly[i] ?? 0,
-    diff: (selectedAlloc?.monthly[i] ?? 0) - (firstAlloc?.monthly[i] ?? 0),
+    diff: round1((selectedAlloc?.monthly[i] ?? 0) - (firstAlloc?.monthly[i] ?? 0)),
   }));
 
   return (
@@ -113,7 +115,7 @@ export default function Drilldown() {
                 {months.map((month, idx) => {
                   const prev = firstAlloc?.monthly[idx] ?? 0;
                   const curr = selectedAlloc?.monthly[idx] ?? 0;
-                  const diff = curr - prev;
+                  const diff = round1(curr - prev);
                   return (
                     <tr key={idx} className="border-b border-gray-50">
                       <td className="py-2 px-2 text-gray-900">{month}</td>

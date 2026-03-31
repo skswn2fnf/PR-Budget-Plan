@@ -28,7 +28,7 @@ function getMonthlyDiffs(prev: Version | null, curr: Version, months: string[]) 
     month,
     prev: prevMonthly[i] ?? 0,
     curr: currMonthly[i] ?? 0,
-    diff: (currMonthly[i] ?? 0) - (prevMonthly[i] ?? 0),
+    diff: Math.round(((currMonthly[i] ?? 0) - (prevMonthly[i] ?? 0)) * 10) / 10,
   }));
 }
 

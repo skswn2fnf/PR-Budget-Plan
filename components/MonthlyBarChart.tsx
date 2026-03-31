@@ -50,7 +50,7 @@ export default function MonthlyBarChart({
             className="text-sm font-semibold"
             style={{ color: getBarColor(data.diff) }}
           >
-            증감: {data.diff > 0 ? '+' : ''}{data.diff.toLocaleString()}
+            증감: {data.diff > 0 ? '+' : ''}{(Math.round(data.diff * 10) / 10).toLocaleString()}
           </p>
         </div>
       );

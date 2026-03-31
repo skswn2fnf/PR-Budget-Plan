@@ -38,13 +38,15 @@ export default function Dashboard() {
   const incr = totalIncrease(comparisons);
   const decr = totalDecrease(comparisons);
 
+  const round1 = (v: number) => Math.round(v * 10) / 10;
+
   // 차트 데이터
   const prevMonthly = firstVersion.allocations.adult_viral?.monthly ?? [];
   const chartData = months.map((month, i) => ({
     month,
     prev: prevMonthly[i] ?? 0,
     curr: adultMonthly[i] ?? 0,
-    diff: (adultMonthly[i] ?? 0) - (prevMonthly[i] ?? 0),
+    diff: round1((adultMonthly[i] ?? 0) - (prevMonthly[i] ?? 0)),
   }));
 
   return (

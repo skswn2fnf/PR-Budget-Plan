@@ -17,12 +17,12 @@ export function getTTLMonthly(version: BudgetVersion): number[] {
       result[i] += monthly[i];
     }
   }
-  return result;
+  return result.map((v) => Math.round(v * 10) / 10);
 }
 
 // TTL 합계
 export function getTTLTotal(version: BudgetVersion): number {
-  return Object.values(version.allocations).reduce((sum, a) => sum + a.total, 0);
+  return Math.round(Object.values(version.allocations).reduce((sum, a) => sum + a.total, 0) * 10) / 10;
 }
 
 // 비중 계산 (%)

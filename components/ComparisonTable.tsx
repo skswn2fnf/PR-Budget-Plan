@@ -18,7 +18,10 @@ export default function ComparisonTable({
   totalCurr,
 }: ComparisonTableProps) {
   const formatNumber = (num: number) => {
-    return new Intl.NumberFormat('ko-KR').format(Math.round(num));
+    const rounded = Math.round(num * 10) / 10;
+    return rounded % 1 === 0
+      ? new Intl.NumberFormat('ko-KR').format(rounded)
+      : rounded.toLocaleString('ko-KR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
   };
 
   const formatPercent = (num: number) => {

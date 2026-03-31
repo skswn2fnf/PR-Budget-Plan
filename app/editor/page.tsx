@@ -28,11 +28,12 @@ export default function Editor() {
   const originalTotal = initialMonthly.reduce((sum, val) => sum + val, 0);
   const difference = Math.round((editedTotal - originalTotal) * 10) / 10;
 
+  const round1 = (v: number) => Math.round(v * 10) / 10;
   const chartData = months.map((month, i) => ({
     month,
     prev: initialMonthly[i] ?? 0,
     curr: editableMonthly[i] ?? 0,
-    diff: (editableMonthly[i] ?? 0) - (initialMonthly[i] ?? 0),
+    diff: round1((editableMonthly[i] ?? 0) - (initialMonthly[i] ?? 0)),
   }));
 
   const handleSave = async () => {
