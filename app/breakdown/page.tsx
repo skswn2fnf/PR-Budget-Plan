@@ -18,19 +18,20 @@ export default function Breakdown() {
 
   const breakdown = data.breakdowns[selectedVersionId];
   const months = data.metadata.months;
-  const firstVersion = data.versions[0];
-  const selectedVersion = data.versions.find((v) => v.id === selectedVersionId)!;
+  const selectedIdx = data.versions.findIndex((v) => v.id === selectedVersionId);
+  const selectedVersion = data.versions[selectedIdx];
+  const prevVersion = selectedIdx > 0 ? data.versions[selectedIdx - 1] : selectedVersion;
 
   const changeHighlights = useMemo(
     () =>
       computeChangeHighlights(
-        firstVersion,
+        prevVersion,
         selectedVersion,
         months,
-        firstVersion.label.split(' ')[0],
-        '변경'
+        prevVersion.label,
+        selectedVersion.label
       ),
-    [firstVersion, selectedVersion, months]
+    [prevVersion, selectedVersion, months]
   );
 
   if (!breakdown) {
@@ -84,12 +85,12 @@ export default function Breakdown() {
             <div className="w-1 h-5 bg-[#D63384] rounded-full" />
             <h2 className="text-sm font-bold text-gray-700 tracking-wide">주요 변동 요약</h2>
             <span className="text-xs text-gray-400 ml-2">
-              {firstVersion.label} 대비 자동 계산
+              {prevVersion.label} 대비 자동 계산
             </span>
           </div>
           <BudgetChangeCards
             highlights={changeHighlights}
-            prevVersion={firstVersion}
+            prevVersion={prevVersion}
             currVersion={selectedVersion}
             months={months}
           />
