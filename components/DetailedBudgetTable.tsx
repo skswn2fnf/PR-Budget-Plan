@@ -82,11 +82,6 @@ export default function DetailedBudgetTable({ groups, months }: DetailedBudgetTa
                         <div className="font-semibold text-gray-700 text-xs leading-tight break-keep whitespace-normal">
                           {group.name}
                         </div>
-                        {group.items.length > 1 && (
-                          <div className="text-[10px] text-gray-400 font-normal mt-1.5 whitespace-nowrap">
-                            소계 {fmt(groupTotal)}
-                          </div>
-                        )}
                       </td>
                     )}
 
