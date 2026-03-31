@@ -34,7 +34,7 @@ export default function BudgetEditor({
 
   const handleInputChange = (index: number, newValue: string) => {
     if (readOnly) return;
-    const numValue = newValue === '' ? 0 : parseInt(newValue, 10);
+    const numValue = newValue === '' ? 0 : parseFloat(newValue);
     const newValues = [...values];
     newValues[index] = isNaN(numValue) ? 0 : numValue;
     setValues(newValues);
@@ -80,6 +80,7 @@ export default function BudgetEditor({
                 <td key={idx} className="px-3 py-3 border border-gray-300">
                   <input
                     type="number"
+                    step="any"
                     value={values[idx]}
                     onChange={(e) => handleInputChange(idx, e.target.value)}
                     readOnly={readOnly}
