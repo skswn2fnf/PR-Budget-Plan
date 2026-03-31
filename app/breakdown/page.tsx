@@ -87,7 +87,12 @@ export default function Breakdown() {
               {firstVersion.label} 대비 자동 계산
             </span>
           </div>
-          <BudgetChangeCards highlights={changeHighlights} />
+          <BudgetChangeCards
+            highlights={changeHighlights}
+            prevVersion={firstVersion}
+            currVersion={selectedVersion}
+            months={months}
+          />
         </section>
 
         {/* Section 1: 총예산 월별 개요 */}
