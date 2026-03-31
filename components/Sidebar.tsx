@@ -9,6 +9,7 @@ import {
   Edit3,
   Lightbulb,
   TableProperties,
+  PenLine,
 } from "lucide-react";
 
 const navItems = [
@@ -17,6 +18,7 @@ const navItems = [
   { href: "/compare", label: "버전 비교", icon: GitCompare },
   { href: "/drilldown", label: "카테고리", icon: PieChart },
   { href: "/editor", label: "예산 편집", icon: Edit3 },
+  { href: "/breakdown-editor", label: "세부 예산 편집", icon: PenLine },
   { href: "/insights", label: "인사이트", icon: Lightbulb },
 ];
 

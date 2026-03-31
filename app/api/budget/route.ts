@@ -46,3 +46,23 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: '저장에 실패했습니다.' }, { status: 500 });
   }
 }
+
+// PATCH: breakdowns 세부 예산 저장
+export async function PATCH(request: Request) {
+  try {
+    const body = await request.json();
+    const { versionId, breakdown } = body;
+    if (!versionId || !breakdown) {
+      return NextResponse.json({ error: 'versionId와 breakdown이 필요합니다.' }, { status: 400 });
+    }
+
+    const data = readBudgetData();
+    if (!data.breakdowns) data.breakdowns = {};
+    data.breakdowns[versionId] = breakdown;
+    writeBudgetData(data);
+
+    return NextResponse.json({ success: true, versionId });
+  } catch (error) {
+    return NextResponse.json({ error: '세부 예산 저장에 실패했습니다.' }, { status: 500 });
+  }
+}
