@@ -1,18 +1,27 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import budgetData from '@/data/budget.json';
 import Header from '@/components/Header';
 import ComparisonTable from '@/components/ComparisonTable';
 import { compareVersions, compareVersionsTTL } from '@/lib/calculations';
 import type { BudgetData } from '@/lib/types';
 
-const data = budgetData as unknown as BudgetData;
+const fallback = budgetData as unknown as BudgetData;
 
 export default function Compare() {
-  const [prevVersionId, setPrevVersionId] = useState(data.versions[0].id);
+  const [data, setData] = useState<BudgetData>(fallback);
+
+  useEffect(() => {
+    fetch('/api/budget')
+      .then((r) => r.json())
+      .then((d) => setData(d))
+      .catch(() => {});
+  }, []);
+
+  const [prevVersionId, setPrevVersionId] = useState(fallback.versions[0].id);
   const [currVersionId, setCurrVersionId] = useState(
-    data.versions[data.versions.length - 1].id
+    fallback.versions[fallback.versions.length - 1].id
   );
   const [tabMode, setTabMode] = useState<'adult_viral' | 'ttl'>('adult_viral');
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import budgetData from '@/data/budget.json';
 import Header from '@/components/Header';
@@ -8,14 +8,31 @@ import BudgetEditor from '@/components/BudgetEditor';
 import MonthlyBarChart from '@/components/MonthlyBarChart';
 import type { BudgetData } from '@/lib/types';
 
-const data = budgetData as unknown as BudgetData;
+const fallback = budgetData as unknown as BudgetData;
 
 type SaveStatus = 'idle' | 'saving' | 'success' | 'error';
 
 export default function Editor() {
   const router = useRouter();
+  const [data, setData] = useState<BudgetData>(fallback);
+
+  useEffect(() => {
+    fetch('/api/budget')
+      .then((r) => r.json())
+      .then((d: BudgetData) => {
+        setData(d);
+        const latest = d.versions[d.versions.length - 1];
+        const monthly = latest.allocations.adult_viral?.monthly ?? [];
+        setInitialMonthly(monthly);
+        setEditableMonthly([...monthly]);
+      })
+      .catch(() => {});
+  }, []);
+
   const latestVersion = data.versions[data.versions.length - 1];
-  const initialMonthly = latestVersion.allocations.adult_viral?.monthly ?? [];
+  const [initialMonthly, setInitialMonthly] = useState<number[]>(
+    latestVersion.allocations.adult_viral?.monthly ?? []
+  );
   const months = data.metadata.months;
 
   const [editableMonthly, setEditableMonthly] = useState<number[]>([...initialMonthly]);
@@ -25,7 +42,7 @@ export default function Editor() {
   const [errorMsg, setErrorMsg] = useState('');
 
   const editedTotal = Math.round(editableMonthly.reduce((sum, val) => sum + val, 0) * 10) / 10;
-  const originalTotal = initialMonthly.reduce((sum, val) => sum + val, 0);
+  const originalTotal = Math.round(initialMonthly.reduce((sum, val) => sum + val, 0) * 10) / 10;
   const difference = Math.round((editedTotal - originalTotal) * 10) / 10;
 
   const round1 = (v: number) => Math.round(v * 10) / 10;
@@ -91,7 +108,6 @@ export default function Editor() {
       <Header title="예산 편집" />
 
       <div className="px-6 py-8">
-        {/* 안내 */}
         <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
           <h3 className="text-base font-semibold text-gray-900 mb-2">편집 방법</h3>
           <p className="text-gray-500 text-sm leading-relaxed">
@@ -100,7 +116,6 @@ export default function Editor() {
           </p>
         </div>
 
-        {/* 편집 테이블 */}
         <BudgetEditor
           months={months}
           monthly={initialMonthly}
@@ -109,7 +124,6 @@ export default function Editor() {
           label="성인 바이럴 예산"
         />
 
-        {/* 통계 카드 */}
         <div className="grid grid-cols-3 gap-4 mt-6 mb-6">
           <div className="bg-white rounded-xl shadow-sm p-5">
             <div className="text-xs text-gray-400 mb-2">원본 합계</div>
@@ -137,7 +151,6 @@ export default function Editor() {
           </div>
         </div>
 
-        {/* 버전 정보 입력 */}
         <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
           <h3 className="text-base font-semibold text-gray-900 mb-4">새 버전 정보</h3>
           <div className="space-y-4">
@@ -166,19 +179,17 @@ export default function Editor() {
           </div>
         </div>
 
-        {/* 저장 상태 메시지 */}
         {saveStatus === 'success' && (
           <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-xl text-sm text-green-800 font-medium">
-            ✅ 새 버전이 저장되었습니다. 대시보드로 이동합니다…
+            새 버전이 저장되었습니다. 대시보드로 이동합니다…
           </div>
         )}
         {saveStatus === 'error' && (
           <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-800">
-            ❌ {errorMsg}
+            {errorMsg}
           </div>
         )}
 
-        {/* 저장 버튼 */}
         <button
           onClick={handleSave}
           disabled={isSaving || saveStatus === 'success' || !canSave}
@@ -193,7 +204,6 @@ export default function Editor() {
           {isSaving ? '저장 중…' : saveStatus === 'success' ? '저장 완료!' : '새 버전으로 저장'}
         </button>
 
-        {/* 미리보기 차트 */}
         <div className="bg-white rounded-xl shadow-sm p-6">
           <h3 className="text-sm font-semibold text-gray-500 mb-4">편집 미리보기</h3>
           <MonthlyBarChart data={chartData} height={280} />

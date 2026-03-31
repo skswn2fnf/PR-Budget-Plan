@@ -1,19 +1,28 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import budgetData from '@/data/budget.json';
 import Header from '@/components/Header';
 import MonthlyBarChart from '@/components/MonthlyBarChart';
 import { getTTLTotal, calcPercentage } from '@/lib/calculations';
 import type { BudgetData } from '@/lib/types';
 
-const data = budgetData as unknown as BudgetData;
+const fallback = budgetData as unknown as BudgetData;
 
 export default function Drilldown() {
+  const [data, setData] = useState<BudgetData>(fallback);
+
+  useEffect(() => {
+    fetch('/api/budget')
+      .then((r) => r.json())
+      .then((d) => setData(d))
+      .catch(() => {});
+  }, []);
+
   const [selectedVersionId, setSelectedVersionId] = useState(
-    data.versions[data.versions.length - 1].id
+    fallback.versions[fallback.versions.length - 1].id
   );
-  const [selectedCategory, setSelectedCategory] = useState(data.categories[0].id);
+  const [selectedCategory, setSelectedCategory] = useState(fallback.categories[0].id);
 
   const selectedVersion = data.versions.find((v) => v.id === selectedVersionId)!;
   const firstVersion = data.versions[0];
@@ -30,7 +39,6 @@ export default function Drilldown() {
 
   const round1 = (v: number) => Math.round(v * 10) / 10;
 
-  // 차트 데이터
   const chartData = months.map((month, i) => ({
     month,
     prev: firstAlloc?.monthly[i] ?? 0,

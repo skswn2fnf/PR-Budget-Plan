@@ -1,14 +1,24 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import budgetData from '@/data/budget.json';
 import Header from '@/components/Header';
 import InsightPanel from '@/components/InsightPanel';
 import CategoryPieChart from '@/components/CategoryPieChart';
 import type { BudgetData } from '@/lib/types';
 
-const data = budgetData as unknown as BudgetData;
+const fallback = budgetData as unknown as BudgetData;
 
 export default function Insights() {
+  const [data, setData] = useState<BudgetData>(fallback);
+
+  useEffect(() => {
+    fetch('/api/budget')
+      .then((r) => r.json())
+      .then((d) => setData(d))
+      .catch(() => {});
+  }, []);
+
   const latestVersion = data.versions[data.versions.length - 1];
 
   return (
