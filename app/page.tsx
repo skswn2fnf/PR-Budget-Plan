@@ -81,6 +81,7 @@ export default function Dashboard() {
             versions={data.versions}
             selectedId={selectedVersionId}
             onSelect={setSelectedVersionId}
+            months={months}
           />
         </div>
       </div>
