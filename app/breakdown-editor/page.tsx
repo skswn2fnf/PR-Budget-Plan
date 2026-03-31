@@ -97,7 +97,7 @@ export default function BreakdownEditor() {
   );
 
   const fmt = (v: number) =>
-    v === 0 ? '—' : v % 1 === 0 ? v.toLocaleString() : v.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+    v === 0 ? '—' : v % 1 === 0 ? v.toLocaleString() : v.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 });
 
   const updateItemMonthly = useCallback((groupIdx: number, itemIdx: number, monthIdx: number, value: string) => {
     setGroups((prev) => {

@@ -12,7 +12,7 @@ export default function BudgetSummaryTable({ rows, months, totalBudget }: Budget
   const ttlMonthly = months.map((_, i) => rows.reduce((sum, r) => sum + r.monthly[i], 0));
   const ttlTotal = rows.reduce((sum, r) => sum + r.total, 0);
 
-  const fmt = (v: number) => v === 0 ? '—' : v % 1 === 0 ? v.toLocaleString() : v.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const fmt = (v: number) => v === 0 ? '—' : v % 1 === 0 ? v.toLocaleString() : v.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 });
   const pct = (v: number, base: number) => base === 0 ? '—' : `${((v / base) * 100).toFixed(0)}%`;
 
   const maxMonthlyTTL = Math.max(...ttlMonthly);

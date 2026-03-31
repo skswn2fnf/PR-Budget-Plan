@@ -29,7 +29,7 @@ export default function DetailedBudgetTable({ groups, months }: DetailedBudgetTa
       ? '—'
       : v % 1 === 0
       ? v.toLocaleString()
-      : v.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+      : v.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 });
   const pct = (v: number, base: number) =>
     base === 0 ? '—' : `${((v / base) * 100).toFixed(0)}%`;
 
