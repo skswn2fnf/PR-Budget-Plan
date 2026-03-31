@@ -7,10 +7,22 @@ interface DetailedBudgetTableProps {
   months: string[];
 }
 
+const GROUP_COLORS: Record<string, string> = {
+  ambassador: '#FDF2F8',
+  look_item: '#FFF8E1',
+  sh_issue: '#FFF0F0',
+  outdoor: '#F0FFF4',
+  celeb: '#F3F0FF',
+  kids_cat: '#EFF6FF',
+  spot_cat: '#F0FDFA',
+};
+
 export default function DetailedBudgetTable({ groups, months }: DetailedBudgetTableProps) {
   const allItems = groups.flatMap((g) => g.items);
   const grandTotal = allItems.reduce((sum, item) => sum + item.total, 0);
-  const grandMonthly = months.map((_, i) => allItems.reduce((sum, item) => sum + item.monthly[i], 0));
+  const grandMonthly = months.map((_, i) =>
+    allItems.reduce((sum, item) => sum + item.monthly[i], 0)
+  );
 
   const fmt = (v: number) =>
     v === 0
@@ -33,7 +45,7 @@ export default function DetailedBudgetTable({ groups, months }: DetailedBudgetTa
           <thead>
             <tr className="bg-gray-50">
               <th className="text-left px-4 py-3 font-semibold text-gray-600 border-b border-gray-200 sticky left-0 bg-gray-50 z-10" style={{ width: 100, minWidth: 100 }}>구분</th>
-              <th className="text-left px-3 py-3 font-semibold text-gray-600 border-b border-gray-200" style={{ width: 160, minWidth: 160 }}>세부</th>
+              <th className="text-left px-3 py-3 font-semibold text-gray-600 border-b border-gray-200" style={{ width: 130, minWidth: 130 }}>세부</th>
               {months.map((m) => (
                 <th key={m} className="text-right px-2 py-3 font-semibold text-gray-600 border-b border-gray-200" style={{ width: 68, minWidth: 68 }}>{m}</th>
               ))}
@@ -47,6 +59,7 @@ export default function DetailedBudgetTable({ groups, months }: DetailedBudgetTa
               const groupMonthly = months.map((_, i) =>
                 group.items.reduce((s, it) => s + it.monthly[i], 0)
               );
+              const bgColor = GROUP_COLORS[group.id] ?? '#FFFFFF';
 
               return group.items.map((item, itemIdx) => {
                 const isFirst = itemIdx === 0;
@@ -54,16 +67,17 @@ export default function DetailedBudgetTable({ groups, months }: DetailedBudgetTa
                 const barWidth = grandTotal > 0 ? (item.total / grandTotal) * 100 : 0;
 
                 return (
-                  <tr
-                    key={item.id}
-                    className="hover:bg-gray-50/50 transition-colors"
-                  >
+                  <tr key={item.id} style={{ backgroundColor: bgColor }}>
                     {/* Group name */}
                     {isFirst && (
                       <td
-                        className="px-4 py-3 border-b border-gray-200 align-top sticky left-0 bg-white z-10"
+                        className="px-4 py-3 align-top sticky left-0 z-10"
                         rowSpan={group.items.length}
-                        style={{ borderLeft: `3px solid ${item.color}` }}
+                        style={{
+                          borderLeft: `3px solid ${item.color}`,
+                          borderBottom: '2px solid #E5E7EB',
+                          backgroundColor: bgColor,
+                        }}
                       >
                         <div className="font-semibold text-gray-700 text-xs leading-tight break-keep whitespace-normal">
                           {group.name}
@@ -76,25 +90,15 @@ export default function DetailedBudgetTable({ groups, months }: DetailedBudgetTa
                       </td>
                     )}
 
-                    {/* Item name + note */}
-                    <td className={`px-3 py-3 ${isLast ? 'border-b border-gray-200' : 'border-b border-gray-50'}`}>
+                    {/* Item name */}
+                    <td
+                      className="px-3 py-3"
+                      style={{ borderBottom: isLast ? '2px solid #E5E7EB' : '1px solid #F3F4F6' }}
+                    >
                       <div className="flex items-center gap-2">
-                        <div
-                          className="w-2 h-2 rounded-full flex-shrink-0"
-                          style={{ backgroundColor: item.color }}
-                        />
-                        <span className="font-medium text-gray-700 text-xs whitespace-nowrap">
-                          {item.name}
-                        </span>
+                        <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: item.color }} />
+                        <span className="font-medium text-gray-700 text-xs whitespace-nowrap">{item.name}</span>
                       </div>
-                      {item.note && (
-                        <p
-                          className="text-[10px] text-gray-400 mt-1 ml-4 leading-snug whitespace-normal break-keep"
-                          style={{ maxWidth: 140, wordBreak: 'keep-all', overflowWrap: 'anywhere' }}
-                        >
-                          {item.note}
-                        </p>
-                      )}
                     </td>
 
                     {/* Monthly values */}
@@ -107,46 +111,38 @@ export default function DetailedBudgetTable({ groups, months }: DetailedBudgetTa
                       return (
                         <td
                           key={i}
-                          className={`text-right px-2 py-3 tabular-nums text-xs ${
-                            isLast ? 'border-b border-gray-200' : 'border-b border-gray-50'
-                          }`}
+                          className="text-right px-2 py-3 tabular-nums text-xs"
                           style={{
                             color: val === 0 ? '#DEE2E6' : isHighInGroup ? item.color : '#495057',
+                            borderBottom: isLast ? '2px solid #E5E7EB' : '1px solid #F3F4F6',
                           }}
                         >
-                          <span className={isHighInGroup ? 'font-bold' : ''}>
-                            {fmt(val)}
-                          </span>
+                          <span className={isHighInGroup ? 'font-bold' : ''}>{fmt(val)}</span>
                         </td>
                       );
                     })}
 
                     {/* Total + mini bar */}
                     <td
-                      className={`text-right px-3 py-3 bg-gray-50 ${
-                        isLast ? 'border-b border-gray-200' : 'border-b border-gray-50'
-                      }`}
+                      className="text-right px-3 py-3"
+                      style={{
+                        backgroundColor: `color-mix(in srgb, ${bgColor} 50%, #F9FAFB)`,
+                        borderBottom: isLast ? '2px solid #E5E7EB' : '1px solid #F3F4F6',
+                      }}
                     >
-                      <div className="font-bold text-xs" style={{ color: item.color }}>
-                        {fmt(item.total)}
-                      </div>
-                      <div className="mt-1 h-1 rounded-full bg-gray-100 overflow-hidden">
-                        <div
-                          className="h-full rounded-full"
-                          style={{
-                            width: `${barWidth}%`,
-                            backgroundColor: item.color,
-                            opacity: 0.5,
-                          }}
-                        />
+                      <div className="font-bold text-xs" style={{ color: item.color }}>{fmt(item.total)}</div>
+                      <div className="mt-1 h-1 rounded-full bg-gray-200/50 overflow-hidden">
+                        <div className="h-full rounded-full" style={{ width: `${barWidth}%`, backgroundColor: item.color, opacity: 0.5 }} />
                       </div>
                     </td>
 
                     {/* Percentage */}
                     <td
-                      className={`text-right px-3 py-3 text-xs font-medium text-gray-500 bg-gray-50 ${
-                        isLast ? 'border-b border-gray-200' : 'border-b border-gray-50'
-                      }`}
+                      className="text-right px-3 py-3 text-xs font-medium text-gray-500"
+                      style={{
+                        backgroundColor: `color-mix(in srgb, ${bgColor} 50%, #F9FAFB)`,
+                        borderBottom: isLast ? '2px solid #E5E7EB' : '1px solid #F3F4F6',
+                      }}
                     >
                       {pct(item.total, grandTotal)}
                     </td>
@@ -157,20 +153,11 @@ export default function DetailedBudgetTable({ groups, months }: DetailedBudgetTa
 
             {/* Grand total */}
             <tr className="bg-gray-800 text-white">
-              <td
-                className="px-4 py-3 sticky left-0 bg-gray-800 z-10 font-bold text-xs"
-                colSpan={2}
-              >
-                거래 TTL
-              </td>
+              <td className="px-4 py-3 sticky left-0 bg-gray-800 z-10 font-bold text-xs" colSpan={2}>거래 TTL</td>
               {grandMonthly.map((val, i) => (
-                <td key={i} className="text-right px-2 py-3 font-bold tabular-nums text-xs">
-                  {fmt(val)}
-                </td>
+                <td key={i} className="text-right px-2 py-3 font-bold tabular-nums text-xs">{fmt(val)}</td>
               ))}
-              <td className="text-right px-3 py-3 font-bold text-xs bg-gray-900">
-                {fmt(grandTotal)}
-              </td>
+              <td className="text-right px-3 py-3 font-bold text-xs bg-gray-900">{fmt(grandTotal)}</td>
               <td className="text-right px-3 py-3 font-bold text-xs bg-gray-900">100%</td>
             </tr>
           </tbody>

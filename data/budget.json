@@ -124,53 +124,41 @@
       "detailed": [
         {
           "id": "ambassador",
-          "name": "앰버서더 이슈",
+          "name": "앰버서더",
           "items": [
-            { "id": "ninning", "name": "닝닝", "monthly": [0, 80, 41.9, 51, 50, 16.5, 12.5, 0], "total": 251.9, "color": "#D63384", "note": "닝닝 봄/여름 바이럴 · 여행에디션 바이럴(04/14) · 2차 SNS" },
-            { "id": "wooseok", "name": "우석", "monthly": [0, 20, 20, 30, 25, 12.5, 0, 0], "total": 107.5, "color": "#845EF7", "note": "변우석 바이럴 · 변우석 여름 바이럴 · 28FW 신인 모집" },
-            { "id": "event", "name": "행사", "monthly": [0, 0, 60, 25, 0, 0, 0, 0], "total": 85, "color": "#E8590C", "note": "닝닝 행사 · 변우석 행사" }
+            { "id": "ninning", "name": "닝닝", "monthly": [0, 80, 41.9, 51, 50, 16.5, 12.5, 0], "total": 251.9, "color": "#D63384" },
+            { "id": "wooseok", "name": "변우석", "monthly": [0, 20, 20, 30, 25, 12.5, 0, 0], "total": 107.5, "color": "#845EF7" },
+            { "id": "event", "name": "행사", "monthly": [0, 0, 60, 25, 0, 0, 0, 0], "total": 85, "color": "#E8590C" }
           ]
         },
         {
           "id": "look_item",
-          "name": "룩/클릭 아이템",
+          "name": "IMC 아이템",
           "items": [
-            { "id": "imc", "name": "IMC 에이밍", "monthly": [0, 22.1, 22, 34, 48, 0, 19.5, 20], "total": 165.6, "color": "#E67700", "note": "WJ/TRTP · WJ/TR/TP · WJ/RS/SH · RS/SH · 28SS PR 콘텐 지시 · IMC" }
+            { "id": "imc", "name": "IMC 에이밍", "monthly": [0, 22.1, 22, 34, 48, 0, 19.5, 20], "total": 165.6, "color": "#E67700" },
+            { "id": "summer", "name": "여름 아웃도어", "monthly": [0, 0, 0, 0, 27, 25, 8, 0], "total": 60, "color": "#2B8A3E" },
+            { "id": "celeb_viral", "name": "셀럽별 바이럴", "monthly": [0, 0, 0, 0, 0, 5, 5, 0], "total": 10, "color": "#845EF7" }
           ]
         },
         {
           "id": "sh_issue",
-          "name": "SH 이슈팩",
+          "name": "SPOT_SH 이슈화",
           "items": [
-            { "id": "maryjane", "name": "메리제인 슈즈 이슈화", "monthly": [0, 0, 0, 0, 30, 0, 0, 0], "total": 30, "color": "#FF6B6B", "note": "28SS PR 콘셉 지시 · SH 이슈화" }
-          ]
-        },
-        {
-          "id": "outdoor",
-          "name": "여름 아웃도어",
-          "items": [
-            { "id": "summer", "name": "여름 아웃도어 바이럴", "monthly": [0, 0, 0, 0, 27, 25, 8, 0], "total": 60, "color": "#E67700", "note": "아웃도어 시즌 집중 바이럴" }
-          ]
-        },
-        {
-          "id": "celeb",
-          "name": "셀럽 바이럴",
-          "items": [
-            { "id": "celeb_viral", "name": "셀럽별 바이럴", "monthly": [0, 0, 0, 0, 0, 5, 5, 0], "total": 10, "color": "#845EF7", "note": "6~7월 셀럽별 바이럴 이관 (각 500만)" }
+            { "id": "maryjane", "name": "메리제인 슈즈", "monthly": [0, 0, 0, 0, 30, 0, 0, 0], "total": 30, "color": "#FF6B6B" }
           ]
         },
         {
           "id": "kids_cat",
-          "name": "카테고리(키즈)",
+          "name": "키즈",
           "items": [
-            { "id": "kids", "name": "키즈", "monthly": [5, 5, 10, 10, 10, 10, 10, 5], "total": 65, "color": "#1971C2", "note": "키즈 카테고리 월별 집행" }
+            { "id": "kids", "name": "키즈", "monthly": [5, 5, 10, 10, 10, 10, 10, 5], "total": 65, "color": "#1971C2" }
           ]
         },
         {
           "id": "spot_cat",
-          "name": "SPOT(신학기)",
+          "name": "SPOT_신학기",
           "items": [
-            { "id": "spot", "name": "신학기", "monthly": [35, 30, 0, 0, 0, 0, 0, 0], "total": 65, "color": "#0CA678", "note": "신학기 직페/백팩 캠페인" }
+            { "id": "spot", "name": "신학기", "monthly": [35, 30, 0, 0, 0, 0, 0, 0], "total": 65, "color": "#0CA678" }
           ]
         }
       ]
