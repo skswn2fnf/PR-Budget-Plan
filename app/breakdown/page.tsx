@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import budgetData from '@/data/budget.json';
 import Header from '@/components/Header';
 import BudgetChangeCards from '@/components/BudgetChangeCards';
 import BudgetSummaryTable from '@/components/BudgetSummaryTable';
 import DetailedBudgetTable from '@/components/DetailedBudgetTable';
+import { computeChangeHighlights } from '@/lib/calculations';
 import type { BudgetData } from '@/lib/types';
 
 const data = budgetData as unknown as BudgetData;
@@ -17,6 +18,20 @@ export default function Breakdown() {
 
   const breakdown = data.breakdowns[selectedVersionId];
   const months = data.metadata.months;
+  const firstVersion = data.versions[0];
+  const selectedVersion = data.versions.find((v) => v.id === selectedVersionId)!;
+
+  const changeHighlights = useMemo(
+    () =>
+      computeChangeHighlights(
+        firstVersion,
+        selectedVersion,
+        months,
+        firstVersion.label.split(' ')[0],
+        '변경'
+      ),
+    [firstVersion, selectedVersion, months]
+  );
 
   if (!breakdown) {
     return (
@@ -36,8 +51,6 @@ export default function Breakdown() {
       </div>
     );
   }
-
-  const selectedVersion = data.versions.find((v) => v.id === selectedVersionId)!;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -65,14 +78,16 @@ export default function Breakdown() {
           </div>
         </div>
 
-        {/* 주요 변동 요약 카드 */}
+        {/* 주요 변동 요약 카드 — 동적 계산 */}
         <section>
           <div className="flex items-center gap-2 mb-3">
             <div className="w-1 h-5 bg-[#D63384] rounded-full" />
             <h2 className="text-sm font-bold text-gray-700 tracking-wide">주요 변동 요약</h2>
-            <span className="text-xs text-gray-400 ml-2">기존 대비 핵심 변경사항</span>
+            <span className="text-xs text-gray-400 ml-2">
+              {firstVersion.label} 대비 자동 계산
+            </span>
           </div>
-          <BudgetChangeCards highlights={breakdown.changeHighlights} />
+          <BudgetChangeCards highlights={changeHighlights} />
         </section>
 
         {/* Section 1: 총예산 월별 개요 */}

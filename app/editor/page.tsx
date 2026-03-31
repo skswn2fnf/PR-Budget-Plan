@@ -80,7 +80,9 @@ export default function Editor() {
     }
   };
 
-  const isChanged = JSON.stringify(editableMonthly) !== JSON.stringify(initialMonthly);
+  const valuesChanged = JSON.stringify(editableMonthly) !== JSON.stringify(initialMonthly);
+  const hasLabelOrNote = versionLabel.trim() !== '' || versionNote.trim() !== '';
+  const canSave = valuesChanged || hasLabelOrNote;
   const isSaving = saveStatus === 'saving';
 
   return (
@@ -178,11 +180,11 @@ export default function Editor() {
         {/* 저장 버튼 */}
         <button
           onClick={handleSave}
-          disabled={isSaving || saveStatus === 'success' || !isChanged}
+          disabled={isSaving || saveStatus === 'success' || !canSave}
           className={`w-full font-semibold py-3 rounded-xl transition mb-6 ${
             isSaving || saveStatus === 'success'
               ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              : !isChanged
+              : !canSave
               ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
               : 'bg-brand-pink hover:bg-brand-pink/90 text-white'
           }`}

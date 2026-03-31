@@ -124,3 +124,139 @@ export function formatPct(value: number): string {
   const sign = value > 0 ? "+" : "";
   return `${sign}${value.toFixed(1)}%`;
 }
+
+// ── 예산 변동 요약 동적 계산 ──
+
+export interface MonthDiff {
+  month: string;
+  monthIndex: number;
+  diff: number;
+}
+
+export interface ComputedFocusPeriod {
+  label: string;
+  monthRange: string;
+  prevLabel: string;
+  currLabel: string;
+  prevOtherPct: number;
+  prevFocusPct: number;
+  currOtherPct: number;
+  currFocusPct: number;
+  changePp: number;
+}
+
+export interface ComputedChangeCard {
+  label: string;
+  totalChange: number;
+  color: string;
+  details: string[];
+}
+
+export interface ComputedChangeHighlights {
+  focusPeriod: ComputedFocusPeriod;
+  increases: ComputedChangeCard;
+  decreases: ComputedChangeCard;
+  notes: string[];
+}
+
+function round1(v: number): number {
+  return Math.round(v * 10) / 10;
+}
+
+function findBestConsecutivePair(diffs: number[]): [number, number] {
+  let bestSum = -Infinity;
+  let bestStart = 0;
+  for (let i = 0; i < diffs.length - 1; i++) {
+    const sum = diffs[i] + diffs[i + 1];
+    if (sum > bestSum) {
+      bestSum = sum;
+      bestStart = i;
+    }
+  }
+  return [bestStart, bestStart + 1];
+}
+
+export function computeChangeHighlights(
+  prev: BudgetVersion,
+  curr: BudgetVersion,
+  months: string[],
+  prevLabel: string,
+  currLabel: string
+): ComputedChangeHighlights {
+  const prevTTL = getTTLMonthly(prev);
+  const currTTL = getTTLMonthly(curr);
+  const prevTotal = getTTLTotal(prev);
+  const currTotal = getTTLTotal(curr);
+
+  const diffs = months.map((_, i) => round1(currTTL[i] - prevTTL[i]));
+
+  const [focusA, focusB] = findBestConsecutivePair(diffs);
+  const focusMonths = `${months[focusA].replace('월', '')}~${months[focusB]}`;
+
+  const prevFocusSum = prevTTL[focusA] + prevTTL[focusB];
+  const currFocusSum = currTTL[focusA] + currTTL[focusB];
+  const prevFocusPct = round1((prevFocusSum / prevTotal) * 100);
+  const currFocusPct = round1((currFocusSum / currTotal) * 100);
+  const changePp = round1(currFocusPct - prevFocusPct);
+
+  const focusPeriod: ComputedFocusPeriod = {
+    label: `${focusMonths} 비중 변화`,
+    monthRange: focusMonths,
+    prevLabel,
+    currLabel,
+    prevOtherPct: round1(100 - prevFocusPct),
+    prevFocusPct,
+    currOtherPct: round1(100 - currFocusPct),
+    currFocusPct,
+    changePp,
+  };
+
+  const increasedMonths: MonthDiff[] = [];
+  const decreasedMonths: MonthDiff[] = [];
+
+  diffs.forEach((d, i) => {
+    if (d > 0) increasedMonths.push({ month: months[i], monthIndex: i + 1, diff: d });
+    if (d < 0) decreasedMonths.push({ month: months[i], monthIndex: i + 1, diff: d });
+  });
+
+  const totalIncr = round1(increasedMonths.reduce((s, m) => s + m.diff, 0));
+  const totalDecr = round1(decreasedMonths.reduce((s, m) => s + m.diff, 0));
+
+  const incrMonthNames = increasedMonths.map((m) => m.month).join(' / ');
+  const decrMonthNames = decreasedMonths.map((m) => m.month).join(' / ');
+
+  const incrDetails = increasedMonths.map(
+    (m) => `${m.month} +${round1(m.diff * 100).toLocaleString()}만 (${round1(m.diff)}백만)`
+  );
+  const decrDetails = decreasedMonths.map(
+    (m) => `${m.month} ${round1(m.diff * 100).toLocaleString()}만 (${round1(m.diff)}백만)`
+  );
+
+  const increases: ComputedChangeCard = {
+    label: `${incrMonthNames} 예산 증액`,
+    totalChange: round1(totalIncr * 100),
+    color: '#D63384',
+    details: incrDetails,
+  };
+
+  const decreases: ComputedChangeCard = {
+    label: `${decrMonthNames} 예산 감액`,
+    totalChange: round1(totalDecr * 100),
+    color: '#1971C2',
+    details: decrDetails,
+  };
+
+  const notes: string[] = [];
+  const unchangedMonths = months.filter((_, i) => diffs[i] === 0);
+  if (unchangedMonths.length > 0) {
+    notes.push(`${unchangedMonths.join(' · ')} 예산 변동 없음`);
+  }
+  const netChange = round1(totalIncr + totalDecr);
+  if (netChange === 0) {
+    notes.push('총 예산 변동 없음 (재배분만 발생)');
+  } else {
+    notes.push(`총 예산 ${netChange > 0 ? '+' : ''}${round1(netChange * 100).toLocaleString()}만 변동`);
+  }
+
+  return { focusPeriod, increases, decreases, notes };
+}

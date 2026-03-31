@@ -116,41 +116,6 @@
   ],
   "breakdowns": {
     "v3": {
-      "changeHighlights": {
-        "focusPeriod": {
-          "label": "4~5월 비중 변화",
-          "prevLabel": "기존",
-          "currLabel": "변경",
-          "prevOtherPct": 64.3,
-          "prevFocusPct": 35.7,
-          "currOtherPct": 57.6,
-          "currFocusPct": 42.4,
-          "changePp": 6.7
-        },
-        "increases": {
-          "label": "4월 / 5월 바이럴 시즌 증액",
-          "totalChange": 5500,
-          "color": "#D63384",
-          "details": [
-            "5월 +5,500만 (4월 변우석 행사 비용 5월로 일부 이관)",
-            "5월 앰버서더 릴리즈 이슈 추가 편성으로 예산 조정"
-          ]
-        },
-        "decreases": {
-          "label": "3월 / 6월 / 7월 예산 감액",
-          "totalChange": -5710,
-          "color": "#1971C2",
-          "details": [
-            "3월 −1,610만 (SU 전환에 힘쓰기 위해, SP 비용 축소)",
-            "6월 −2,600만 · 7월 −1,500만 (셀럽 바이럴 비용 축소)",
-            "환절기 · 장마 시즌 효율 저하 예상"
-          ]
-        },
-        "notes": [
-          "키즈 예산(월 500~1,000만)은 변동 없이 유지 | 신학기 백팩(1~2월) 변동 없음",
-          "5월 SH 메리제인 슈즈 이슈화 3천만 신규 편성 | 6~7월 셀럽별 바이럴 각 500만 추가"
-        ]
-      },
       "summary": [
         { "id": "spot", "name": "신학기 직페(SPOT)", "monthly": [35, 30, 0, 0, 0, 0, 0, 0], "total": 65, "color": "#0CA678" },
         { "id": "adult_viral", "name": "성인 바이럴(숏즈)", "monthly": [0, 122.1, 143.9, 140, 180, 59, 45, 20], "total": 710, "color": "#D63384" },
