@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import budgetData from '@/data/budget.json';
 import Header from '@/components/Header';
 import type { BudgetData, DetailedGroup, DetailedItem, BudgetSummaryRow } from '@/lib/types';
 import { Plus, Trash2, GripVertical, Save, RotateCcw } from 'lucide-react';
 
-const data = budgetData as unknown as BudgetData;
+const fallback = budgetData as unknown as BudgetData;
 
 const GROUP_COLORS: Record<string, string> = {
   ambassador: '#FDF2F8',
@@ -27,17 +27,20 @@ const GROUP_BORDER_COLORS: Record<string, string> = {
 
 type SaveStatus = 'idle' | 'saving' | 'success' | 'error';
 
-function getBreakdownForVersion(versionId: string): { groups: DetailedGroup[]; source: 'own' | 'template'; templateFrom?: string } {
-  const own = data.breakdowns[versionId];
+function getBreakdownForVersion(
+  bData: BudgetData,
+  versionId: string
+): { groups: DetailedGroup[]; source: 'own' | 'template'; templateFrom?: string } {
+  const own = bData.breakdowns[versionId];
   if (own?.detailed?.length) {
     return { groups: own.detailed, source: 'own' };
   }
-  const allVersionIds = Object.keys(data.breakdowns);
+  const allVersionIds = Object.keys(bData.breakdowns);
   if (allVersionIds.length > 0) {
     const templateId = allVersionIds[allVersionIds.length - 1];
-    const template = data.breakdowns[templateId];
+    const template = bData.breakdowns[templateId];
     if (template?.detailed?.length) {
-      const templateLabel = data.versions.find((v) => v.id === templateId)?.label ?? templateId;
+      const templateLabel = bData.versions.find((v) => v.id === templateId)?.label ?? templateId;
       return { groups: template.detailed, source: 'template', templateFrom: templateLabel };
     }
   }
@@ -46,26 +49,40 @@ function getBreakdownForVersion(versionId: string): { groups: DetailedGroup[]; s
 
 export default function BreakdownEditor() {
   const router = useRouter();
+  const [data, setData] = useState<BudgetData>(fallback);
   const months = data.metadata.months;
 
   const [selectedVersionId, setSelectedVersionId] = useState(
-    data.versions[data.versions.length - 1].id
+    fallback.versions[fallback.versions.length - 1].id
   );
 
-  const initial = getBreakdownForVersion(selectedVersionId);
-  const initialGroups: DetailedGroup[] = initial.groups;
+  useEffect(() => {
+    fetch('/api/budget')
+      .then((r) => r.json())
+      .then((d: BudgetData) => {
+        setData(d);
+        const result = getBreakdownForVersion(d, selectedVersionId);
+        setGroups(JSON.parse(JSON.stringify(result.groups)));
+        setTemplateSource(result.templateFrom);
+        setInitialSnapshot(JSON.stringify(result.groups));
+      })
+      .catch(() => {});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
+  const initial = getBreakdownForVersion(data, selectedVersionId);
   const [groups, setGroups] = useState<DetailedGroup[]>(
-    JSON.parse(JSON.stringify(initialGroups))
+    JSON.parse(JSON.stringify(initial.groups))
   );
+  const [initialSnapshot, setInitialSnapshot] = useState(JSON.stringify(initial.groups));
   const [templateSource, setTemplateSource] = useState<string | undefined>(initial.templateFrom);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
   const [errorMsg, setErrorMsg] = useState('');
 
   const isNewBreakdown = !data.breakdowns[selectedVersionId]?.detailed?.length;
   const hasChanges = useMemo(
-    () => JSON.stringify(groups) !== JSON.stringify(initialGroups),
-    [groups, initialGroups]
+    () => JSON.stringify(groups) !== initialSnapshot,
+    [groups, initialSnapshot]
   );
   const canSave = hasChanges || isNewBreakdown;
 
@@ -162,9 +179,11 @@ export default function BreakdownEditor() {
   }, []);
 
   const resetChanges = useCallback(() => {
-    setGroups(JSON.parse(JSON.stringify(initialGroups)));
+    const result = getBreakdownForVersion(data, selectedVersionId);
+    setGroups(JSON.parse(JSON.stringify(result.groups)));
+    setInitialSnapshot(JSON.stringify(result.groups));
     setSaveStatus('idle');
-  }, [initialGroups]);
+  }, [data, selectedVersionId]);
 
   const computeSummaryFromDetailed = (detailed: DetailedGroup[]): BudgetSummaryRow[] => {
     const templateSummary = (() => {
@@ -226,6 +245,11 @@ export default function BreakdownEditor() {
         const err = await res.json();
         throw new Error(err.error ?? '저장에 실패했습니다.');
       }
+
+      const freshData: BudgetData = await fetch('/api/budget').then((r) => r.json());
+      setData(freshData);
+      setInitialSnapshot(JSON.stringify(normalizedGroups));
+
       setSaveStatus('success');
       setTimeout(() => {
         router.push('/breakdown');
@@ -237,19 +261,22 @@ export default function BreakdownEditor() {
     }
   };
 
+  const handleVersionChange = (id: string) => {
+    setSelectedVersionId(id);
+    const result = getBreakdownForVersion(data, id);
+    setGroups(JSON.parse(JSON.stringify(result.groups)));
+    setInitialSnapshot(JSON.stringify(result.groups));
+    setTemplateSource(result.templateFrom);
+    setSaveStatus('idle');
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header
         title="세부 예산 편집"
         versions={data.versions.map((v) => ({ id: v.id, label: v.label }))}
         selectedVersionId={selectedVersionId}
-        onVersionChange={(id) => {
-          setSelectedVersionId(id);
-          const result = getBreakdownForVersion(id);
-          setGroups(JSON.parse(JSON.stringify(result.groups)));
-          setTemplateSource(result.templateFrom);
-          setSaveStatus('idle');
-        }}
+        onVersionChange={handleVersionChange}
       />
 
       <div className="px-6 py-8 space-y-6">
@@ -379,7 +406,6 @@ export default function BreakdownEditor() {
                           </td>
                         )}
 
-                        {/* Item name */}
                         <td className="px-2 py-2" style={{ borderBottom: isLast ? '2px solid #E5E7EB' : '1px solid #F3F4F6' }}>
                           <div className="flex items-center gap-1.5">
                             <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: item.color }} />
@@ -392,7 +418,6 @@ export default function BreakdownEditor() {
                           </div>
                         </td>
 
-                        {/* Monthly inputs */}
                         {item.monthly.map((val, mIdx) => (
                           <td
                             key={mIdx}
@@ -410,7 +435,6 @@ export default function BreakdownEditor() {
                           </td>
                         ))}
 
-                        {/* Total */}
                         <td
                           className="text-right px-3 py-2 text-xs font-bold tabular-nums"
                           style={{
@@ -422,7 +446,6 @@ export default function BreakdownEditor() {
                           {fmt(itemTotal)}
                         </td>
 
-                        {/* Delete item */}
                         <td
                           className="text-center px-2 py-2"
                           style={{ borderBottom: isLast ? '2px solid #E5E7EB' : '1px solid #F3F4F6' }}
@@ -441,7 +464,6 @@ export default function BreakdownEditor() {
                   });
                 })}
 
-                {/* Grand total */}
                 <tr className="bg-gray-800 text-white">
                   <td className="px-3 py-3 sticky left-0 bg-gray-800 z-10 font-bold text-xs" colSpan={2}>거래 TTL</td>
                   {grandMonthly.map((val, i) => (

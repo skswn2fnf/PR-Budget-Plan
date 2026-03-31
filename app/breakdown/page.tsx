@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import budgetData from '@/data/budget.json';
 import Header from '@/components/Header';
 import BudgetChangeCards from '@/components/BudgetChangeCards';
@@ -9,11 +9,21 @@ import DetailedBudgetTable from '@/components/DetailedBudgetTable';
 import { computeChangeHighlights } from '@/lib/calculations';
 import type { BudgetData } from '@/lib/types';
 
-const data = budgetData as unknown as BudgetData;
+const fallback = budgetData as unknown as BudgetData;
 
 export default function Breakdown() {
+  const [data, setData] = useState<BudgetData>(fallback);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/budget')
+      .then((r) => r.json())
+      .then((d) => { setData(d); setLoading(false); })
+      .catch(() => setLoading(false));
+  }, []);
+
   const [selectedVersionId, setSelectedVersionId] = useState(
-    data.versions[data.versions.length - 1].id
+    fallback.versions[fallback.versions.length - 1].id
   );
 
   const breakdown = data.breakdowns[selectedVersionId];
@@ -45,8 +55,14 @@ export default function Breakdown() {
         />
         <div className="px-6 py-16 text-center">
           <div className="bg-white rounded-xl shadow-sm p-10 max-w-md mx-auto">
-            <p className="text-gray-400 text-sm">선택한 버전의 세부 예산 데이터가 없습니다.</p>
-            <p className="text-gray-300 text-xs mt-2">최종 변경 (03.26) 버전을 선택해주세요.</p>
+            {loading ? (
+              <p className="text-gray-400 text-sm">데이터를 불러오는 중...</p>
+            ) : (
+              <>
+                <p className="text-gray-400 text-sm">선택한 버전의 세부 예산 데이터가 없습니다.</p>
+                <p className="text-gray-300 text-xs mt-2">세부 예산 편집에서 데이터를 추가해주세요.</p>
+              </>
+            )}
           </div>
         </div>
       </div>
