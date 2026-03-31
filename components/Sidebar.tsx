@@ -8,10 +8,12 @@ import {
   PieChart,
   Edit3,
   Lightbulb,
+  TableProperties,
 } from "lucide-react";
 
 const navItems = [
   { href: "/", label: "Overview", icon: LayoutDashboard },
+  { href: "/breakdown", label: "예산 변동 상세", icon: TableProperties },
   { href: "/compare", label: "버전 비교", icon: GitCompare },
   { href: "/drilldown", label: "카테고리", icon: PieChart },
   { href: "/editor", label: "예산 편집", icon: Edit3 },

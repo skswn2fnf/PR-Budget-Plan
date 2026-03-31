@@ -42,11 +42,40 @@ export interface Insight {
   recommendation: string;
 }
 
+export interface DetailedItem {
+  id: string;
+  name: string;
+  monthly: number[];
+  total: number;
+  color: string;
+  note?: string;
+}
+
+export interface DetailedGroup {
+  id: string;
+  name: string;
+  items: DetailedItem[];
+}
+
+export interface BudgetSummaryRow {
+  id: string;
+  name: string;
+  monthly: number[];
+  total: number;
+  color: string;
+}
+
+export interface VersionBreakdown {
+  summary: BudgetSummaryRow[];
+  detailed: DetailedGroup[];
+}
+
 export interface BudgetData {
   metadata: BudgetMetadata;
   categories: Category[];
   versions: BudgetVersion[];
   insights: Insight[];
+  breakdowns: Record<string, VersionBreakdown>;
 }
 
 export interface MonthlyComparison {
