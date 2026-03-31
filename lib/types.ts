@@ -65,7 +65,33 @@ export interface BudgetSummaryRow {
   color: string;
 }
 
+export interface FocusPeriod {
+  label: string;
+  prevLabel: string;
+  currLabel: string;
+  prevOtherPct: number;
+  prevFocusPct: number;
+  currOtherPct: number;
+  currFocusPct: number;
+  changePp: number;
+}
+
+export interface ChangeCard {
+  label: string;
+  totalChange: number;
+  color: string;
+  details: string[];
+}
+
+export interface ChangeHighlights {
+  focusPeriod: FocusPeriod;
+  increases: ChangeCard;
+  decreases: ChangeCard;
+  notes: string[];
+}
+
 export interface VersionBreakdown {
+  changeHighlights: ChangeHighlights;
   summary: BudgetSummaryRow[];
   detailed: DetailedGroup[];
 }

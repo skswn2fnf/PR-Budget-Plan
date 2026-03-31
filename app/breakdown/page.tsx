@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import budgetData from '@/data/budget.json';
 import Header from '@/components/Header';
+import BudgetChangeCards from '@/components/BudgetChangeCards';
 import BudgetSummaryTable from '@/components/BudgetSummaryTable';
 import DetailedBudgetTable from '@/components/DetailedBudgetTable';
 import type { BudgetData } from '@/lib/types';
@@ -57,10 +58,22 @@ export default function Breakdown() {
             </div>
             <div className="text-right">
               <div className="text-3xl font-bold">{data.metadata.totalBudget / 100}억</div>
-              <div className="text-gray-400 text-xs mt-1">{data.metadata.totalBudget}백만 · {data.metadata.year}년</div>
+              <div className="text-gray-400 text-xs mt-1">
+                {data.metadata.totalBudget}백만 · {data.metadata.year}년
+              </div>
             </div>
           </div>
         </div>
+
+        {/* 주요 변동 요약 카드 */}
+        <section>
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-1 h-5 bg-[#D63384] rounded-full" />
+            <h2 className="text-sm font-bold text-gray-700 tracking-wide">주요 변동 요약</h2>
+            <span className="text-xs text-gray-400 ml-2">기존 대비 핵심 변경사항</span>
+          </div>
+          <BudgetChangeCards highlights={breakdown.changeHighlights} />
+        </section>
 
         {/* Section 1: 총예산 월별 개요 */}
         <section>
@@ -83,10 +96,7 @@ export default function Breakdown() {
             <h2 className="text-sm font-bold text-gray-700 tracking-wide">SECTION 2 — 세부 주제별 예산</h2>
             <span className="text-xs text-gray-400 ml-2">주제별 월간 예산 비중 배분 확인</span>
           </div>
-          <DetailedBudgetTable
-            groups={breakdown.detailed}
-            months={months}
-          />
+          <DetailedBudgetTable groups={breakdown.detailed} months={months} />
         </section>
       </div>
     </div>
