@@ -19,9 +19,9 @@ const GROUP_COLORS: Record<string, string> = {
 
 export default function DetailedBudgetTable({ groups, months }: DetailedBudgetTableProps) {
   const allItems = groups.flatMap((g) => g.items);
-  const grandTotal = allItems.reduce((sum, item) => sum + item.total, 0);
+  const grandTotal = Math.round(allItems.reduce((sum, item) => sum + item.total, 0) * 100) / 100;
   const grandMonthly = months.map((_, i) =>
-    allItems.reduce((sum, item) => sum + item.monthly[i], 0)
+    Math.round(allItems.reduce((sum, item) => sum + item.monthly[i], 0) * 100) / 100
   );
 
   const fmt = (v: number) =>

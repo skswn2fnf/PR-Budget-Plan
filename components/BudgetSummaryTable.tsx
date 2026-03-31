@@ -9,8 +9,8 @@ interface BudgetSummaryTableProps {
 }
 
 export default function BudgetSummaryTable({ rows, months, totalBudget }: BudgetSummaryTableProps) {
-  const ttlMonthly = months.map((_, i) => rows.reduce((sum, r) => sum + r.monthly[i], 0));
-  const ttlTotal = rows.reduce((sum, r) => sum + r.total, 0);
+  const ttlMonthly = months.map((_, i) => Math.round(rows.reduce((sum, r) => sum + r.monthly[i], 0) * 100) / 100);
+  const ttlTotal = Math.round(rows.reduce((sum, r) => sum + r.total, 0) * 100) / 100;
 
   const fmt = (v: number) => v === 0 ? '—' : v % 1 === 0 ? v.toLocaleString() : v.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 });
   const pct = (v: number, base: number) => base === 0 ? '—' : `${((v / base) * 100).toFixed(0)}%`;

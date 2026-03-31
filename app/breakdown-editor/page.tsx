@@ -87,12 +87,12 @@ export default function BreakdownEditor() {
   const canSave = hasChanges || isNewBreakdown;
 
   const grandTotal = useMemo(
-    () => groups.flatMap((g) => g.items).reduce((sum, it) => sum + it.monthly.reduce((s, v) => s + v, 0), 0),
+    () => Math.round(groups.flatMap((g) => g.items).reduce((sum, it) => sum + it.monthly.reduce((s, v) => s + v, 0), 0) * 100) / 100,
     [groups]
   );
 
   const grandMonthly = useMemo(
-    () => months.map((_, i) => groups.flatMap((g) => g.items).reduce((sum, it) => sum + it.monthly[i], 0)),
+    () => months.map((_, i) => Math.round(groups.flatMap((g) => g.items).reduce((sum, it) => sum + it.monthly[i], 0) * 100) / 100),
     [groups, months]
   );
 
