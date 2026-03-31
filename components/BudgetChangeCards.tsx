@@ -10,6 +10,8 @@ interface BudgetChangeCardsProps {
   prevVersion: BudgetVersion;
   currVersion: BudgetVersion;
   months: string[];
+  prevMonthlyOverride?: number[];
+  currMonthlyOverride?: number[];
 }
 
 export default function BudgetChangeCards({
@@ -17,14 +19,16 @@ export default function BudgetChangeCards({
   prevVersion,
   currVersion,
   months,
+  prevMonthlyOverride,
+  currMonthlyOverride,
 }: BudgetChangeCardsProps) {
   const { increases, decreases, notes } = highlights;
   const [selectedMonths, setSelectedMonths] = useState<Set<number>>(new Set());
 
-  const prevTTL = useMemo(() => getTTLMonthly(prevVersion), [prevVersion]);
-  const currTTL = useMemo(() => getTTLMonthly(currVersion), [currVersion]);
-  const prevTotal = useMemo(() => getTTLTotal(prevVersion), [prevVersion]);
-  const currTotal = useMemo(() => getTTLTotal(currVersion), [currVersion]);
+  const prevTTL = useMemo(() => prevMonthlyOverride ?? getTTLMonthly(prevVersion), [prevVersion, prevMonthlyOverride]);
+  const currTTL = useMemo(() => currMonthlyOverride ?? getTTLMonthly(currVersion), [currVersion, currMonthlyOverride]);
+  const prevTotal = useMemo(() => Math.round(prevTTL.reduce((s, v) => s + v, 0) * 100) / 100, [prevTTL]);
+  const currTotal = useMemo(() => Math.round(currTTL.reduce((s, v) => s + v, 0) * 100) / 100, [currTTL]);
 
   const maxVal = Math.max(...prevTTL, ...currTTL, 1);
 

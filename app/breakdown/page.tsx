@@ -44,6 +44,26 @@ export default function Breakdown() {
     [prevVersion, selectedVersion, months]
   );
 
+  const computeTTLFromBreakdown = (versionId: string): number[] | undefined => {
+    const bd = data.breakdowns[versionId];
+    if (!bd?.detailed?.length) return undefined;
+    const allItems = bd.detailed.flatMap((g) => g.items);
+    return months.map((_, i) =>
+      Math.round(allItems.reduce((sum, it) => sum + (it.monthly[i] ?? 0), 0) * 100) / 100
+    );
+  };
+
+  const currMonthlyFromBreakdown = useMemo(
+    () => computeTTLFromBreakdown(selectedVersionId),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [data, selectedVersionId]
+  );
+  const prevMonthlyFromBreakdown = useMemo(
+    () => selectedIdx > 0 ? computeTTLFromBreakdown(data.versions[selectedIdx - 1].id) : undefined,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [data, selectedIdx]
+  );
+
   if (!breakdown) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -109,6 +129,8 @@ export default function Breakdown() {
             prevVersion={prevVersion}
             currVersion={selectedVersion}
             months={months}
+            prevMonthlyOverride={prevMonthlyFromBreakdown}
+            currMonthlyOverride={currMonthlyFromBreakdown}
           />
         </section>
 
